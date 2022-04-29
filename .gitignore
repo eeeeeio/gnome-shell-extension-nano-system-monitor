@@ -1,0 +1,12 @@
+dist/
+node_modules/
+*.log
+.idea
+.env.local
+.env.*.local
+.expo/
+.expo-shared/
+.tmp/
+local.config.js
+.DS_Store
+.hprof

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
+    <schema path="/org/gnome/shell/extensions/nano-system-monitor/" id="org.gnome.shell.extensions.nano-system-monitor">
+        <key type="b" name="is-net-speed-enable">
+            <default>true</default>
+            <summary>Show Net Speed</summary>
+            <description>Show Net Speed</description>
+        </key>
+        <key type="b" name="is-cpu-temp-enable">
+            <default>true</default>
+            <summary>Show CPU Temperature</summary>
+            <description>Show CPU Temperature</description>
+        </key>
+        <key type="i" name="refresh-interval">
+            <default>1</default>
+            <summary>Refresh Interval In Second</summary>
+            <description>Refresh Interval In Second</description>
+        </key>
+        <key type="s" name="font-family">
+            <default>'Sans'</default>
+            <summary>Font Family</summary>
+            <description>Font Family</description>
+        </key>
+        <key type="s" name="font-size">
+            <default>'13'</default>
+            <summary>Font Size</summary>
+            <description>Font Size</description>
+        </key>
+        <key type="s" name="text-color">
+            <default>'#dddddd'</default>
+            <summary>Text Color</summary>
+            <description>Text Color</description>
+        </key>
+    </schema>
+</schemalist>
