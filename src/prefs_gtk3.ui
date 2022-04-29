@@ -56,13 +56,13 @@
           </packing>
         </child>
         <child>
-          <object class="GtkSwitch" id="cpu_temp_enable_switch_switch">
+          <object class="GtkSwitch" id="cpu_temp_enable_switch">
             <property name="visible">1</property>
             <property name="can_focus">1</property>
             <property name="halign">center</property>
             <property name="valign">center</property>
             <property name="margin_top">20</property>
-            <signal name="state-set" handler="cpu_temp_enable_switch_switch_changed" swapped="no" />
+            <signal name="state-set" handler="cpu_temp_enable_switch_changed" swapped="no" />
           </object>
           <packing>
             <property name="left_attach">1</property>

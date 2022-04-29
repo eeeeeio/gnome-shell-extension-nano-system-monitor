@@ -29,7 +29,6 @@ const NanoSystemMonitorPrefsWidget = GObject.registerClass({
     'text_color'
   ]
 }, class NanoSystemMonitorPrefsWidget extends Gtk.Box {
-  Configuration = new Settings.Prefs();
   _init() {
     super._init({
       orientation: Gtk.Orientation.VERTICAL,
@@ -39,38 +38,44 @@ const NanoSystemMonitorPrefsWidget = GObject.registerClass({
     this.update_widget_setting_values();
   }
   update_widget_setting_values() {
-    this._net_speed_enable_switch.set_active(this.Configuration.IS_NET_SPEED_ENABLE.get());
-    this._cpu_temp_enable_switch.set_active(this.Configuration.IS_CPU_TEMP_ENABLE.get());
-    this._refresh_interval.set_value(this.Configuration.REFRESH_INTERVAL.get());
-    this._font_button.set_font(`${this.Configuration.FONT_FAMILY.get()} ${this.Configuration.FONT_SIZE.get()}`);
+    const Configuration = new Settings.Prefs();
+    this._net_speed_enable_switch.set_active(Configuration.IS_NET_SPEED_ENABLE.get());
+    this._cpu_temp_enable_switch.set_active(Configuration.IS_CPU_TEMP_ENABLE.get());
+    this._refresh_interval.set_value(Configuration.REFRESH_INTERVAL.get());
+    this._font_button.set_font(`${Configuration.FONT_FAMILY.get()} ${Configuration.FONT_SIZE.get()}`);
     const color = new Gdk.RGBA();
-    color.parse(this.Configuration.TEXT_COLOR.get());
+    color.parse(Configuration.TEXT_COLOR.get());
     this._text_color.set_rgba(color);
   }
 
   color_changed(widget) {
-    this.Configuration.TEXT_COLOR.set(colorToHex(widget.get_rgba()));
+    const Configuration = new Settings.Prefs();
+    Configuration.TEXT_COLOR.set(colorToHex(widget.get_rgba()));
   }
 
   font_changed(widget) {
+    const Configuration = new Settings.Prefs();
     const font = widget.get_font();
     const lastSpaceIndex = font.lastIndexOf(' ');
     const fontFamily = font.substring(0, lastSpaceIndex);
     const fontSize = font.substring(lastSpaceIndex, font.length);
-    this.Configuration.FONT_FAMILY.set(fontFamily);
-    this.Configuration.FONT_SIZE.set(fontSize);
+    Configuration.FONT_FAMILY.set(fontFamily);
+    Configuration.FONT_SIZE.set(fontSize);
   }
 
   net_speed_enable_switch_changed(widget) {
-    this.Configuration.IS_CPU_USAGE_ENABLE.set(widget.get_active());
+    const Configuration = new Settings.Prefs();
+    Configuration.IS_NET_SPEED_ENABLE.set(widget.get_active());
   }
 
   cpu_temp_enable_switch_changed(widget) {
-    this.Configuration.IS_CPU_TEMP_ENABLE.set(widget.get_active());
+    const Configuration = new Settings.Prefs();
+    Configuration.IS_CPU_TEMP_ENABLE.set(widget.get_active());
   }
 
   refresh_interval_changed(widget) {
-    this.Configuration.REFRESH_INTERVAL.set(widget.get_value());
+    const Configuration = new Settings.Prefs();
+    Configuration.REFRESH_INTERVAL.set(widget.get_value());
   }
 });
 
