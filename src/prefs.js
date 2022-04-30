@@ -34,47 +34,43 @@ const NanoSystemMonitorPrefsWidget = GObject.registerClass({
       orientation: Gtk.Orientation.VERTICAL,
       spacing: 30
     });
+    this._configuration = prefs;
 
-    this.update_widget_setting_values(prefs);
+    this.update_widget_setting_values();
   }
-  update_widget_setting_values(Configuration) {
-    this._net_speed_enable_switch.set_active(Configuration.IS_NET_SPEED_ENABLE.get());
-    this._cpu_temp_enable_switch.set_active(Configuration.IS_CPU_TEMP_ENABLE.get());
-    this._refresh_interval.set_value(Configuration.REFRESH_INTERVAL.get());
-    this._font_button.set_font(`${Configuration.FONT_FAMILY.get()} ${Configuration.FONT_SIZE.get()}`);
+  update_widget_setting_values() {
+    this._net_speed_enable_switch.set_active(this._configuration.IS_NET_SPEED_ENABLE.get());
+    this._cpu_temp_enable_switch.set_active(this._configuration.IS_CPU_TEMP_ENABLE.get());
+    this._refresh_interval.set_value(this._configuration.REFRESH_INTERVAL.get());
+    this._font_button.set_font(`${this._configuration.FONT_FAMILY.get()} ${this._configuration.FONT_SIZE.get()}`);
     const color = new Gdk.RGBA();
-    color.parse(Configuration.TEXT_COLOR.get());
+    color.parse(this._configuration.TEXT_COLOR.get());
     this._text_color.set_rgba(color);
   }
 
   color_changed(widget) {
-    const Configuration = new Settings.Prefs();
-    Configuration.TEXT_COLOR.set(colorToHex(widget.get_rgba()));
+    this._configuration.TEXT_COLOR.set(colorToHex(widget.get_rgba()));
   }
 
   font_changed(widget) {
-    const Configuration = new Settings.Prefs();
     const font = widget.get_font();
     const lastSpaceIndex = font.lastIndexOf(' ');
     const fontFamily = font.substring(0, lastSpaceIndex);
     const fontSize = font.substring(lastSpaceIndex, font.length);
-    Configuration.FONT_FAMILY.set(fontFamily);
-    Configuration.FONT_SIZE.set(fontSize);
+    this._configuration.FONT_FAMILY.set(fontFamily);
+    this._configuration.FONT_SIZE.set(fontSize);
   }
 
   net_speed_enable_switch_changed(widget) {
-    const Configuration = new Settings.Prefs();
-    Configuration.IS_NET_SPEED_ENABLE.set(widget.get_active());
+    this._configuration.IS_NET_SPEED_ENABLE.set(widget.get_active());
   }
 
   cpu_temp_enable_switch_changed(widget) {
-    const Configuration = new Settings.Prefs();
-    Configuration.IS_CPU_TEMP_ENABLE.set(widget.get_active());
+    this._configuration.IS_CPU_TEMP_ENABLE.set(widget.get_active());
   }
 
   refresh_interval_changed(widget) {
-    const Configuration = new Settings.Prefs();
-    Configuration.REFRESH_INTERVAL.set(widget.get_value());
+    this._configuration.REFRESH_INTERVAL.set(widget.get_value());
   }
 });
 
