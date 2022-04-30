@@ -12,7 +12,7 @@ For best experience, please use [monospaced font](https://en.wikipedia.org/wiki/
 
 # Installation
 
-- from GNOME extensions: [Nano System Monitor](https://extensions.gnome.org/extension/5034/nano-system-monitor/)
+- from GNOME extensions: [Nano System Monitor](https://extensions.gnome.org/extension/5037/nano-system-monitor/)
 
 # References
 
