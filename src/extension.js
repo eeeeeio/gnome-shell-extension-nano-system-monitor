@@ -552,11 +552,11 @@ class Extension {
     if (this._indicator != null) {
       this._indicator.destroy();
       this._indicator = null;
-      this._prefs = null;
-      this._texts = null;
-      this._enable = null;
-      this._refresh_interval = null;
     }
+    this._prefs = null;
+    this._texts = null;
+    this._enable = null;
+    this._refresh_interval = null;
     if (this._timeout != null) {
       GLib.source_remove(this._timeout);
       this._timeout = null;

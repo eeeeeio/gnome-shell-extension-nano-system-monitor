@@ -29,16 +29,15 @@ const NanoSystemMonitorPrefsWidget = GObject.registerClass({
     'text_color'
   ]
 }, class NanoSystemMonitorPrefsWidget extends Gtk.Box {
-  _init() {
+  _init(prefs) {
     super._init({
       orientation: Gtk.Orientation.VERTICAL,
       spacing: 30
     });
 
-    this.update_widget_setting_values();
+    this.update_widget_setting_values(prefs);
   }
-  update_widget_setting_values() {
-    const Configuration = new Settings.Prefs();
+  update_widget_setting_values(Configuration) {
     this._net_speed_enable_switch.set_active(Configuration.IS_NET_SPEED_ENABLE.get());
     this._cpu_temp_enable_switch.set_active(Configuration.IS_CPU_TEMP_ENABLE.get());
     this._refresh_interval.set_value(Configuration.REFRESH_INTERVAL.get());
@@ -83,7 +82,8 @@ function init() {
 }
 
 function buildPrefsWidget() {
-  const widget = new NanoSystemMonitorPrefsWidget();
+  let prefs = new Settings.Prefs();
+  const widget = new NanoSystemMonitorPrefsWidget(prefs);
   widget.homogeneous = true;
   if (Gtk.get_major_version() === 3) {
     widget.show_all();
