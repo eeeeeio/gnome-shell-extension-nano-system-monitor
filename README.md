@@ -16,5 +16,5 @@ For best experience, please use [monospaced font](https://en.wikipedia.org/wiki/
 
 # References
 
-- [https://github.com/LGiki/gnome-shell-extension-simple-system-monitor](hhttps://github.com/LGiki/gnome-shell-extension-simple-system-monitor)
+- [https://github.com/LGiki/gnome-shell-extension-simple-system-monitor](https://github.com/LGiki/gnome-shell-extension-simple-system-monitor)
 
