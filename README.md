@@ -1,6 +1,6 @@
 # Nano System Monitor
 
-Show current CPU usage, memory and swap usage, net speed and CPU temperature on panel.
+Show current CPU usage, memory and swap usage, net speed and CPU temperature and fan speed on panel.
 
 Different colors represent different percentage states and CPU temperature
 
