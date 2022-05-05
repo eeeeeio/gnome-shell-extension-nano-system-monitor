@@ -420,7 +420,7 @@ const toDisplayString = (
         netSpeed["up"]
       )} - ` : null,
     temp: currentTemp ? `${enable.isLabelEnable ? randerTexts[5] : ""}${currentTemp}` : null,
-    fan: isNaN(fanSpeed) ? null: `${enable.isLabelEnable ? randerTexts[6] : ""}${fanSpeed}`,
+    fan: isNaN(fanSpeed) ? null: `${enable.isLabelEnable ? randerTexts[6] : ""} ${fanSpeed}`,
   }
 
 

@@ -77,6 +77,7 @@
                         <property name="can_focus">1</property>
                         <property name="halign">center</property>
                         <property name="valign">center</property>
+                        <property name="margin_top">20</property>
                         <signal name="state-set" handler="label_enable_switch_changed" swapped="no" />
                         <layout>
                             <property name="column">1</property>
@@ -102,6 +103,7 @@
                         <property name="can_focus">1</property>
                         <property name="halign">center</property>
                         <property name="valign">center</property>
+                        <property name="margin_top">20</property>
                         <signal name="state-set" handler="net_speed_enable_switch_changed" swapped="no" />
                         <layout>
                             <property name="column">1</property>
