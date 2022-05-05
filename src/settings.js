@@ -6,8 +6,12 @@ var Prefs = class Prefs {
   constructor() {
     const settings = ExtensionUtils.getSettings(SETTING_SCHEMA);
 
+    this.LABEL_TEXT = new PrefValue(settings, 'label-text', 'string');
+    this.IS_LABEL_ENABLE = new PrefValue(settings, 'is-label-enable', 'boolean');
     this.IS_NET_SPEED_ENABLE = new PrefValue(settings, 'is-net-speed-enable', 'boolean');
     this.IS_CPU_TEMP_ENABLE = new PrefValue(settings, 'is-cpu-temp-enable', 'boolean');
+    this.IS_FAN_SPEED_ENABLE = new PrefValue(settings, 'is-fan-speed-enable', 'boolean');
+    this.FAN_NUMBER = new PrefValue(settings, 'fan-number', 'int');
     this.REFRESH_INTERVAL = new PrefValue(settings, 'refresh-interval', 'int');
     this.FONT_FAMILY = new PrefValue(settings, 'font-family', 'string');
     this.FONT_SIZE = new PrefValue(settings, 'font-size', 'string');

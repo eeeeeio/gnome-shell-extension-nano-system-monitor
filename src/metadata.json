@@ -1,8 +1,8 @@
 {
   "name": "Nano System Monitor",
-  "description": "Show current status on GNOME Shell panel\n\nbar shows CPU|memory|swap usages,then the download|upload speed and CPU temperature\n\nDifferent colors represent different percentage states and CPU temperature\n\nplease use monospaced font for best experience",
+  "description": "Show current status on GNOME Shell panel\n\nbar shows CPU|memory|swap usages,then the download|upload speed and CPU temperature and fan speed\n\nDifferent colors represent different percentage states and CPU temperature\n\nplease use monospaced font for best experience",
   "uuid": "nano-system-monitor@eeeeeio",
-  "version": 1,
+  "version": 4,
   "shell-version": [
     "42",
     "41",
