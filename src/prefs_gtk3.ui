@@ -1,156 +1,289 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
-  <requires lib="gtk+" version="3.20" />
-  <object class="GtkAdjustment" id="refresh_rate_adjustment">
-    <!-- 86400 seconds = 24 * 60 * 60 = 1 day -->
-    <property name="upper">86400</property>
-    <property name="lower">1</property>
-    <property name="step-increment">1</property>
-    <property name="page-increment">5</property>
-  </object>
-  <template class="NanoSystemMonitorPrefsWidget" parent="GtkBox">
-    <child>
-      <object class="GtkGrid">
-        <property name="can_focus">1</property>
-        <property name="halign">center</property>
-        <property name="valign">center</property>
-        <property name="margin_top">10</property>
-        <property name="margin_bottom">10</property>
-        <property name="row_spacing">5</property>
-        <property name="column_spacing">5</property>
-        <property name="column_homogeneous">1</property>
-        <!-- CPU Usage Enable -->
+    <requires lib="gtk+" version="3.20"/>
+    <object class="GtkAdjustment" id="refresh_rate_adjustment">
+        <!-- 86400 seconds = 24 * 60 * 60 = 1 day -->
+        <property name="upper">86400</property>
+        <property name="lower">1</property>
+        <property name="step-increment">1</property>
+        <property name="page-increment">5</property>
+    </object>
+    <object class="GtkAdjustment" id="fan_number_adjustment">
+        <property name="upper">20</property>
+        <property name="lower">0</property>
+        <property name="step-increment">1</property>
+        <property name="page-increment">5</property>
+    </object>
+    <template class="NanoSystemMonitorPrefsWidget" parent="GtkBox">
         <child>
-          <object class="GtkLabel">
-            <property name="can_focus">0</property>
-            <property name="label" translatable="yes">Show Net Speed</property>
-          </object>
-          <packing>
-            <property name="left_attach">0</property>
-            <property name="top_attach">0</property>
-          </packing>
+            <object class="GtkGrid">
+                <property name="can_focus">1</property>
+                <property name="halign">center</property>
+                <property name="valign">center</property>
+                <property name="margin_top">10</property>
+                <property name="margin_bottom">10</property>
+                <property name="row_spacing">5</property>
+                <property name="column_spacing">5</property>
+                <property name="column_homogeneous">1</property>
+                <!-- Label Text -->
+                <child>
+                    <object class="GtkLabel">
+                        <property name="can_focus">0</property>
+                        <property name="label" translatable="yes">Label Text</property>
+                    </object>
+                    <packing>
+                        <property name="left_attach">0</property>
+                        <property name="top_attach">0</property>
+                    </packing>
+                </child>
+                <child>
+                    <object class="GtkEntry" id="label_text">
+                        <property name="visible">1</property>
+                        <property name="can_focus">1</property>
+                        <property name="valign">center</property>
+                        <property name="text">U|M|S|↓|↑|🌡|F</property>
+                        <signal name="changed" handler="label_text_changed" swapped="no"/>
+                    </object>
+                    <packing>
+                        <property name="left_attach">1</property>
+                        <property name="top_attach">0</property>
+                    </packing>
+                </child>
+                <child>
+                    <object class="GtkLabel">
+                        <property name="can_focus">0</property>
+                        <property name="label" translatable="yes">split with |</property>
+                    </object>
+                    <packing>
+                        <property name="left_attach">1</property>
+                        <property name="top_attach">1</property>
+                    </packing>
+                </child>
+                <!-- Label Enable -->
+                <child>
+                    <object class="GtkLabel">
+                        <property name="can_focus">0</property>
+                        <property name="label" translatable="yes">Label Enable</property>
+                        <property name="margin_top">20</property>
+                    </object>
+                    <packing>
+                        <property name="left_attach">0</property>
+                        <property name="top_attach">2</property>
+                    </packing>
+                </child>
+                <child>
+                    <object class="GtkSwitch" id="label_enable_switch">
+                        <property name="visible">1</property>
+                        <property name="can_focus">1</property>
+                        <property name="halign">center</property>
+                        <property name="valign">center</property>
+                        <signal name="state-set" handler="label_enable_switch_changed" swapped="no"/>
+                    </object>
+                    <packing>
+                        <property name="left_attach">1</property>
+                        <property name="top_attach">2</property>
+                    </packing>
+                </child>
+                <!-- Net Speed Enable -->
+                <child>
+                    <object class="GtkLabel">
+                        <property name="can_focus">0</property>
+                        <property name="margin_top">20</property>
+                        <property name="label" translatable="yes">Show Net Speed</property>
+                    </object>
+                    <packing>
+                        <property name="left_attach">0</property>
+                        <property name="top_attach">3</property>
+                    </packing>
+                </child>
+                <child>
+                    <object class="GtkSwitch" id="net_speed_enable_switch">
+                        <property name="visible">1</property>
+                        <property name="can_focus">1</property>
+                        <property name="halign">center</property>
+                        <property name="valign">center</property>
+                        <signal name="state-set" handler="net_speed_enable_switch_changed" swapped="no"/>
+                    </object>
+                    <packing>
+                        <property name="left_attach">1</property>
+                        <property name="top_attach">3</property>
+                    </packing>
+                </child>
+                <!-- CPU Temperature Enable -->
+                <child>
+                    <object class="GtkLabel">
+                        <property name="can_focus">0</property>
+                        <property name="label" translatable="yes">Show CPU Temperature</property>
+                        <property name="margin_top">20</property>
+                    </object>
+                    <packing>
+                        <property name="left_attach">0</property>
+                        <property name="top_attach">4</property>
+                    </packing>
+                </child>
+                <child>
+                    <object class="GtkSwitch" id="cpu_temp_enable_switch">
+                        <property name="visible">1</property>
+                        <property name="can_focus">1</property>
+                        <property name="halign">center</property>
+                        <property name="valign">center</property>
+                        <property name="margin_top">20</property>
+                        <signal name="state-set" handler="cpu_temp_enable_switch_changed" swapped="no"/>
+                    </object>
+                    <packing>
+                        <property name="left_attach">1</property>
+                        <property name="top_attach">4</property>
+                    </packing>
+                </child>
+                <!-- Fan Speed Enable -->
+                <child>
+                    <object class="GtkLabel">
+                        <property name="can_focus">0</property>
+                        <property name="label" translatable="yes">Show Fan Speed</property>
+                        <property name="margin_top">20</property>
+                    </object>
+                    <packing>
+                        <property name="left_attach">0</property>
+                        <property name="top_attach">5</property>
+                    </packing>
+                </child>
+                <child>
+                    <object class="GtkSwitch" id="fan_speed_enable_switch">
+                        <property name="visible">1</property>
+                        <property name="can_focus">1</property>
+                        <property name="halign">center</property>
+                        <property name="valign">center</property>
+                        <property name="margin_top">20</property>
+                        <signal name="state-set" handler="fan_speed_enable_switch_changed" swapped="no"/>
+                    </object>
+                    <packing>
+                        <property name="left_attach">1</property>
+                        <property name="top_attach">5</property>
+                    </packing>
+                </child>
+
+                <!-- Fan Number -->
+                <child>
+                    <object class="GtkLabel">
+                        <property name="can_focus">0</property>
+                        <property name="margin_top">20</property>
+                        <property name="label" translatable="yes">Fan Number</property>
+                    </object>
+                    <packing>
+                        <property name="left_attach">0</property>
+                        <property name="top_attach">6</property>
+                    </packing>
+                </child>
+                <child>
+                    <object class="GtkSpinButton" id="fan_number">
+                        <property name="visible">1</property>
+                        <property name="margin_top">20</property>
+                        <property name="can_focus">1</property>
+                        <property name="numeric">1</property>
+                        <property name="valign">center</property>
+                        <property name="value">1</property>
+                        <property name="adjustment">fan_number_adjustment</property>
+                        <signal name="value-changed" handler="fan_number_changed" swapped="no"/>
+                    </object>
+                    <packing>
+                        <property name="left_attach">1</property>
+                        <property name="top_attach">6</property>
+                    </packing>
+                </child>
+                <child>
+                    <object class="GtkLabel">
+                        <property name="can_focus">0</property>
+                        <property name="label" translatable="yes">install sensor or use other way
+to enable fan speed</property>
+                    </object>
+                    <packing>
+                        <property name="left_attach">1</property>
+                        <property name="top_attach">7</property>
+                    </packing>
+                </child>
+
+                <!-- Refresh Interval -->
+                <child>
+                    <object class="GtkLabel">
+                        <property name="can_focus">0</property>
+                        <property name="margin_top">20</property>
+                        <property name="label" translatable="yes">Refresh Interval (second)</property>
+                    </object>
+                    <packing>
+                        <property name="left_attach">0</property>
+                        <property name="top_attach">9</property>
+                    </packing>
+                </child>
+                <child>
+                    <object class="GtkSpinButton" id="refresh_interval">
+                        <property name="visible">1</property>
+                        <property name="margin_top">20</property>
+                        <property name="can_focus">1</property>
+                        <property name="numeric">1</property>
+                        <property name="valign">center</property>
+                        <property name="value">1</property>
+                        <property name="adjustment">refresh_rate_adjustment</property>
+                        <signal name="value-changed" handler="refresh_interval_changed" swapped="no"/>
+                    </object>
+                    <packing>
+                        <property name="left_attach">1</property>
+                        <property name="top_attach">9</property>
+                    </packing>
+                </child>
+                <!-- Font Family -->
+                <child>
+                    <object class="GtkLabel">
+                        <property name="can_focus">0</property>
+                        <property name="margin_top">20</property>
+                        <property name="label" translatable="yes">Font</property>
+                    </object>
+                    <packing>
+                        <property name="left_attach">0</property>
+                        <property name="top_attach">10</property>
+                    </packing>
+                </child>
+                <child>
+                    <object class="GtkFontButton" id="font_button">
+                        <property name="visible">1</property>
+                        <property name="can_focus">1</property>
+                        <property name="margin_top">20</property>
+                        <property name="receives_default">1</property>
+                        <property name="font">Sans 12</property>
+                        <property name="language">en-us</property>
+                        <property name="use_font">1</property>
+                        <property name="level">GTK_FONT_CHOOSER_LEVEL_FAMILY | GTK_FONT_CHOOSER_LEVEL_SIZE</property>
+                        <property name="preview_text">U M S - ↓ 56 K/s | ↑ 78 K/s -</property>
+                        <signal name="font-set" handler="font_changed" swapped="no"/>
+                    </object>
+                    <packing>
+                        <property name="left_attach">1</property>
+                        <property name="top_attach">10</property>
+                    </packing>
+                </child>
+                <!-- Text Color -->
+                <child>
+                    <object class="GtkLabel">
+                        <property name="can_focus">0</property>
+                        <property name="label" translatable="yes">Text Color</property>
+                    </object>
+                    <packing>
+                        <property name="left_attach">0</property>
+                        <property name="top_attach">11</property>
+                    </packing>
+                </child>
+                <child>
+                    <object class="GtkColorButton" id='text_color'>
+                        <property name="visible">1</property>
+                        <property name="can_focus">1</property>
+                        <property name="receives_default">1</property>
+                        <signal name="color-set" handler="color_changed" swapped="no"/>
+                    </object>
+                    <packing>
+                        <property name="left_attach">1</property>
+                        <property name="top_attach">11</property>
+                    </packing>
+                </child>
+            </object>
         </child>
-        <child>
-          <object class="GtkSwitch" id="net_speed_enable_switch">
-            <property name="visible">1</property>
-            <property name="can_focus">1</property>
-            <property name="halign">center</property>
-            <property name="valign">center</property>
-            <signal name="state-set" handler="net_speed_enable_switch_changed" swapped="no" />
-          </object>
-          <packing>
-            <property name="left_attach">1</property>
-            <property name="top_attach">0</property>
-          </packing>
-        </child>
-        <!-- Cpu Temperature Enable -->
-        <child>
-          <object class="GtkLabel">
-            <property name="can_focus">0</property>
-            <property name="label" translatable="yes">Show Cpu Temperature</property>
-            <property name="margin_top">20</property>
-          </object>
-          <packing>
-            <property name="left_attach">0</property>
-            <property name="top_attach">2</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkSwitch" id="cpu_temp_enable_switch">
-            <property name="visible">1</property>
-            <property name="can_focus">1</property>
-            <property name="halign">center</property>
-            <property name="valign">center</property>
-            <property name="margin_top">20</property>
-            <signal name="state-set" handler="cpu_temp_enable_switch_changed" swapped="no" />
-          </object>
-          <packing>
-            <property name="left_attach">1</property>
-            <property name="top_attach">2</property>
-          </packing>
-        </child>
-        <!-- Refresh Interval -->
-        <child>
-          <object class="GtkLabel">
-            <property name="can_focus">0</property>
-            <property name="margin_top">20</property>
-            <property name="label" translatable="yes">Refresh Interval (second)</property>
-          </object>
-          <packing>
-            <property name="left_attach">0</property>
-            <property name="top_attach">9</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkSpinButton" id="refresh_interval">
-            <property name="visible">1</property>
-            <property name="margin_top">20</property>
-            <property name="can_focus">1</property>
-            <property name="numeric">1</property>
-            <property name="valign">center</property>
-            <property name="value">1</property>
-            <property name="adjustment">refresh_rate_adjustment</property>
-            <signal name="value-changed" handler="refresh_interval_changed" swapped="no" />
-          </object>
-          <packing>
-            <property name="left_attach">1</property>
-            <property name="top_attach">9</property>
-          </packing>
-        </child>
-        <!-- Font Family -->
-        <child>
-          <object class="GtkLabel">
-            <property name="can_focus">0</property>
-            <property name="margin_top">20</property>
-            <property name="label" translatable="yes">Font</property>
-          </object>
-          <packing>
-            <property name="left_attach">0</property>
-            <property name="top_attach">10</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkFontButton" id="font_button">
-            <property name="visible">1</property>
-            <property name="can_focus">1</property>
-            <property name="margin_top">20</property>
-            <property name="receives_default">1</property>
-            <property name="font">Sans 12</property>
-            <property name="language">en-us</property>
-            <property name="use_font">1</property>
-            <property name="level">GTK_FONT_CHOOSER_LEVEL_FAMILY | GTK_FONT_CHOOSER_LEVEL_SIZE</property>
-            <property name="preview_text">U 12% M 34% ↓ 56 K/s ↑ 78 K/s</property>
-            <signal name="font-set" handler="font_changed" swapped="no" />
-          </object>
-          <packing>
-            <property name="left_attach">1</property>
-            <property name="top_attach">10</property>
-          </packing>
-        </child>
-        <!-- Text Color -->
-        <child>
-          <object class="GtkLabel">
-            <property name="can_focus">0</property>
-            <property name="label" translatable="yes">Text Color</property>
-          </object>
-          <packing>
-            <property name="left_attach">0</property>
-            <property name="top_attach">11</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkColorButton" id='text_color'>
-            <property name="visible">1</property>
-            <property name="can_focus">1</property>
-            <property name="receives_default">1</property>
-            <signal name="color-set" handler="color_changed" swapped="no" />
-          </object>
-          <packing>
-            <property name="left_attach">1</property>
-            <property name="top_attach">11</property>
-          </packing>
-        </child>
-      </object>
-    </child>
-  </template>
+    </template>
 </interface>

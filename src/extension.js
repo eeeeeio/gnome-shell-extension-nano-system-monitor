@@ -20,7 +20,7 @@
 
 /* exported init */
 
-const { GObject, St, Clutter, GLib, Gio,Shell } = imports.gi;
+const {GObject, St, Clutter, GLib, Gio, Shell} = imports.gi;
 
 const Main = imports.ui.main;
 const PanelMenu = imports.ui.panelMenu;
@@ -39,15 +39,15 @@ let lastTotalNetUpBytes = 0;
 let lastCPUUsed = 0;
 let lastCPUTotal = 0;
 
-const ColorMap=["#D154A9","#FD5369","#FB7F3A","#FFB00C","#a3d726","#68BF60"];
-const LevelNumberMap=[100,90,80,70,60,50];
-let fontFamilyG="";
-let fontSizeG="";
-let textColorG="";
+const ColorMap = ["#D154A9", "#FD5369", "#FB7F3A", "#FFB00C", "#a3d726", "#68BF60"];
+const LevelNumberMap = [100, 90, 80, 70, 60, 50];
+let fontFamilyG = "";
+let fontSizeG = "";
+let textColorG = "";
 
 // See <https://github.com/AlynxZhou/gnome-shell-extension-net-speed>.
 const getCurrentNetSpeed = refreshInterval => {
-  const netSpeed = { down: 0, up: 0 };
+  const netSpeed = {down: 0, up: 0};
 
   try {
     const inputFile = Gio.File.new_for_path("/proc/net/dev");
@@ -232,7 +232,7 @@ const getCurrentMemoryUsage = () => {
         SwapFree = itemValue;
       }
 
-      if (memTotal !== -1 && memAvailable !== -1&&SwapTotal !== -1 && SwapFree !== -1) {
+      if (memTotal !== -1 && memAvailable !== -1 && SwapTotal !== -1 && SwapFree !== -1) {
         break;
       }
     }
@@ -257,12 +257,12 @@ const getCurrentMemoryUsage = () => {
 };
 
 function spawnCommandLine(command_line) {
-  return new Promise((rec,rej)=>{
+  return new Promise((rec, rej) => {
     try {
-      let proc = new Gio.Subprocess({argv: command_line,flags: Gio.SubprocessFlags.STDOUT_PIPE});
+      let proc = new Gio.Subprocess({argv: command_line, flags: Gio.SubprocessFlags.STDOUT_PIPE});
       proc.init(null);
-      proc.communicate_utf8_async(null, null, (p,result)=>{
-        let [ok, output, ] = p.communicate_utf8_finish(result);
+      proc.communicate_utf8_async(null, null, (p, result) => {
+        let [ok, output,] = p.communicate_utf8_finish(result);
         rec(output)
       });
     } catch (err) {
@@ -270,6 +270,7 @@ function spawnCommandLine(command_line) {
     }
   })
 }
+
 //  sensorsGetTemp
 const sensorsGetTemp = async () => {
   try {
@@ -291,7 +292,7 @@ const sensorsGetTemp = async () => {
 //  /sys/class/hwmon/hwmon2/fan1_input
 
 
-//  sensorsGetTemp
+//  getTemp
 const getTemp = async () => {
   try {
     const inputFile = Gio.File.new_for_path("/sys/class/hwmon/hwmon1/temp1_input");
@@ -311,10 +312,41 @@ const getTemp = async () => {
       line = line.toString().trim();
     }
 
-    return parseInt(parseInt(line)/1000);
+    return parseInt(parseInt(line) / 1000);
 
   } catch (e) {
     logError(e);
+  }
+  return 0;
+};
+
+const getFan = async (numb) => {
+  try {
+    const inputFile = Gio.File.new_for_path(`/sys/class/hwmon/hwmon2/fan${numb}_input`);
+    const fileInputStream = inputFile.read(null);
+    const dataInputStream = new Gio.DataInputStream({
+      base_stream: fileInputStream
+    });
+
+    let line = 0;
+    let length = 0;
+
+    [line, length] = dataInputStream.read_line(null)
+
+    if (line instanceof Uint8Array) {
+      line = ByteArray.toString(line).trim();
+    } else {
+      line = line.toString().trim();
+    }
+
+    if(isNaN(line)){
+      return -1;
+    }
+    return parseInt(line);
+
+  } catch (e) {
+    return -1;
+    // logError(e);
   }
   return 0;
 };
@@ -368,19 +400,27 @@ const toDisplayString = (
   memoryUsage,
   memorySwapUsage,
   currentTemp,
-  netSpeed
+  netSpeed,
+  fanSpeed,
 ) => {
+  let randerTexts = [];
+  try {
+    randerTexts = texts ? texts.split("|").map(v => v.trim()) : [];
+  } catch (e) {
+    logErr(e);
+  }
   return {
-    per:[
+    per: [
       formatUsageVal(cpuUsage),
       formatUsageVal(memoryUsage),
       formatUsageVal(memorySwapUsage),
     ],
-    net:netSpeed?
-      ` - ${formatNetSpeedWithUnit(netSpeed["down"])} | ${formatNetSpeedWithUnit(
+    net: netSpeed ?
+      ` - ${enable.isLabelEnable ? `${randerTexts[3]} ` : ""}${formatNetSpeedWithUnit(netSpeed["down"])} | ${enable.isLabelEnable ? `${randerTexts[4]} ` : ""}${formatNetSpeedWithUnit(
         netSpeed["up"]
-      )} - `:null,
-    temp:currentTemp,
+      )} - ` : null,
+    temp: currentTemp ? `${enable.isLabelEnable ? randerTexts[5] : ""}${currentTemp}` : null,
+    fan: isNaN(fanSpeed) ? null: `${enable.isLabelEnable ? randerTexts[6] : ""}${fanSpeed}`,
   }
 
 
@@ -391,29 +431,60 @@ const Indicator = GObject.registerClass(
     _init() {
       super._init(0.0, "Simple System Monitor");
 
-      const box = new St.BoxLayout({y_align: Clutter.ActorAlign.CENTER,style:"height:20px" });
+      const box = new St.BoxLayout({y_align: Clutter.ActorAlign.CENTER, style: "height:20px"});
 
-      this._label = [
+      this._barGauge = [
         new St.BoxLayout({
           y_align: Clutter.ActorAlign.END,
-          style:"width:15px;height:10px;background:#666;border-radius:2px",
+          style: "width:15px;height:10px;background:#666;border-radius:2px",
         }),
         new St.BoxLayout({
           y_align: Clutter.ActorAlign.END,
-          style:"width:15px;height:10px;background:#666;border-radius:2px",
+          style: "width:15px;height:10px;background:#666;border-radius:2px",
         }),
         new St.BoxLayout({
           y_align: Clutter.ActorAlign.END,
-          style:"width:15px;height:10px;background:#666;border-radius:2px",
+          style: "width:15px;height:10px;background:#666;border-radius:2px",
         }),
+      ]
+      this._barText = [
         new St.Label({
           y_align: Clutter.ActorAlign.CENTER,
-          text: "Initialization"
+          text: ""
         }),
         new St.Label({
           y_align: Clutter.ActorAlign.CENTER,
           text: ""
         }),
+        new St.Label({
+          y_align: Clutter.ActorAlign.CENTER,
+          text: ""
+        }),
+      ]
+      this._net = new St.Label({
+        y_align: Clutter.ActorAlign.CENTER,
+        text: "Initialization"
+      });
+      this._temp = new St.Label({
+        y_align: Clutter.ActorAlign.CENTER,
+        text: ""
+      });
+      this._fan = new St.Label({
+        y_align: Clutter.ActorAlign.CENTER,
+        text: ""
+      });
+
+
+      this._label = [
+        this._barText[0],
+        this._barGauge[0],
+        this._barText[1],
+        this._barGauge[1],
+        this._barText[2],
+        this._barGauge[2],
+        this._net,
+        this._temp,
+        this._fan,
         // new St.Label({
         //   y_align: Clutter.ActorAlign.CENTER,
         //   text: "Initialization"
@@ -423,7 +494,7 @@ const Indicator = GObject.registerClass(
       //   y_align: Clutter.ActorAlign.CENTER,
       //   text: "Initialization"
       // });
-      this._label.forEach((v,i)=>{
+      this._label.forEach((v, i) => {
         box.add_child(this._label[i]);
       })
 
@@ -455,10 +526,10 @@ const Indicator = GObject.registerClass(
       //     `font-family: "${fontFamily}";font-size: ${fontSize}px; color: ${textColor};`
       //   );
       // })
-      fontFamilyG=fontFamily;
-      fontSizeG=fontSize;
-      textColorG=textColor;
-      this._label[3].set_style(
+      fontFamilyG = fontFamily;
+      fontSizeG = fontSize;
+      textColorG = textColor;
+      this._net.set_style(
         `font-family: "${fontFamily}";font-size: ${fontSize}px; color: ${textColor}`
       );
       // this._label[4].set_style(
@@ -466,41 +537,47 @@ const Indicator = GObject.registerClass(
       // );
     }
 
+    setLabelText(textList, enable) {
+      this._barText.forEach((v, i) => {
+        this._barText[i].set_text(enable ? (textList[i] || "") : "");
+      })
+    }
 
-    setText(textObj) {
+    rander(textObj) {
       // this._label.forEach((v)=>{
       //   v.set_text(text);
       // })
-      try{
-        textObj.per.forEach((v,i)=>{
-          let bg=ColorMap[5];
-          for(let a=0;a<LevelNumberMap.length-1;a++){
-            if(v>=LevelNumberMap[a]){
-              bg=ColorMap[a];
+      try {
+        textObj.per.forEach((v, i) => {
+          let bg = ColorMap[5];
+          for (let a = 0; a < LevelNumberMap.length - 1; a++) {
+            if (v >= LevelNumberMap[a]) {
+              bg = ColorMap[a];
               break;
             }
           }
-          this._label[i].set_style(
-            `width:15px;height:${parseInt(v/5)}px;background:${bg};border-radius:2px;margin:auto 5px`
+          this._barGauge[i].set_style(
+            `width:15px;height:${parseInt(v / 5)}px;background:${bg};border-radius:2px;margin:auto 5px`
           );
         })
 
-        this._label[3].set_text(textObj.net?textObj.net:"");
+        this._net.set_text(textObj.net ? textObj.net : "");
         let tempBg = textColorG;
-        for(let a=0;a<LevelNumberMap.length-1;a++){
-          if(textObj.temp>=LevelNumberMap[a]){
-            tempBg=ColorMap[a];
+        for (let a = 0; a < LevelNumberMap.length - 1; a++) {
+          if (textObj.temp >= LevelNumberMap[a]) {
+            tempBg = ColorMap[a];
             break;
           }
         }
-        this._label[4].set_text(textObj.temp?` ${textObj.temp}°C `:"");
+        this._temp.set_text(textObj.temp ? ` ${textObj.temp}°C ` : "");
         // this._label[3].set_style(
         //   `font-family: "${fontFamilyG}";font-size: ${fontSizeG}px; color: ${textColorG}`
         // );
-        this._label[4].set_style(
+        this._temp.set_style(
           `font-family: "${fontFamilyG}";font-size: ${fontSizeG}px; color: ${tempBg}`
         );
-      }catch (e){
+        this._fan.set_text(textObj.fan ? ` ${textObj.fan}/s ` : "");
+      } catch (e) {
         logError(e);
       }
       // this._label[1].set_text(text);
@@ -523,18 +600,23 @@ class Extension {
     this._prefs = new Settings.Prefs();
 
     this._texts = {
+      label: this._prefs.LABEL_TEXT.get() || "",
     };
 
     this._enable = {
+      isLabelEnable: this._prefs.IS_LABEL_ENABLE.get(),
+      isFanSpeedEnable: this._prefs.IS_FAN_SPEED_ENABLE.get(),
       isNetSpeedEnable: this._prefs.IS_NET_SPEED_ENABLE.get(),
       isCpuTempEnable: this._prefs.IS_CPU_TEMP_ENABLE.get(),
     };
 
+    this._fan_number = this._prefs.FAN_NUMBER.get();
     this._refresh_interval = this._prefs.REFRESH_INTERVAL.get();
 
     this._indicator = new Indicator();
 
     this._update_text_style();
+    this._update_label();
 
     Main.panel.addToStatusArea(this._uuid, this._indicator, 0, "right");
 
@@ -557,6 +639,7 @@ class Extension {
     this._texts = null;
     this._enable = null;
     this._refresh_interval = null;
+    this._fan_number = null;
     if (this._timeout != null) {
       GLib.source_remove(this._timeout);
       this._timeout = null;
@@ -571,8 +654,19 @@ class Extension {
     );
   }
 
+  _update_label() {
+    let randerTexts = [];
+    try {
+      randerTexts = this._texts.label ? this._texts.label.split("|").map(v => v.trim()) : [];
+    } catch (e) {
+      logErr(e);
+    }
+    this._indicator.setLabelText(randerTexts, this._enable.isLabelEnable);
+  }
+
   async _refresh_monitor() {
     let currentCPUUsage = null;
+    let currentFanSpeed = null;
     let currentMemoryUsage = null;
     let currentNetSpeed = null;
     let currentMemorySwapUsage = null;
@@ -581,6 +675,9 @@ class Extension {
     let memoryUsage = getCurrentMemoryUsage();
     currentMemoryUsage = memoryUsage.currentMemoryUsage;
     currentMemorySwapUsage = memoryUsage.currentSwapMemoryUsage;
+    if (this._enable.isFanSpeedEnable) {
+      currentFanSpeed = await getFan(this._fan_number);
+    }
     if (this._enable.isNetSpeedEnable) {
       currentNetSpeed = getCurrentNetSpeed(this._refresh_interval);
     }
@@ -589,19 +686,28 @@ class Extension {
     }
 
     const displayText = toDisplayString(
-      this._texts,
+      this._texts.label,
       this._enable,
       currentCPUUsage,
       currentMemoryUsage,
       currentMemorySwapUsage,
       currentTemp,
-      currentNetSpeed
+      currentNetSpeed,
+      currentFanSpeed,
     );
-    this._indicator.setText(displayText);
+    this._indicator.rander(displayText);
+    // this._indicator.setText(displayText);
     return GLib.SOURCE_CONTINUE;
   }
 
   _listen_setting_change() {
+    this._prefs.IS_LABEL_ENABLE.changed(() => {
+      this._enable.isLabelEnable = this._prefs.IS_LABEL_ENABLE.get();
+      this._update_label();
+    });
+    this._prefs.IS_FAN_SPEED_ENABLE.changed(() => {
+      this._enable.isFanSpeedEnable = this._prefs.IS_FAN_SPEED_ENABLE.get();
+    });
     this._prefs.IS_NET_SPEED_ENABLE.changed(() => {
       this._enable.isNetSpeedEnable = this._prefs.IS_NET_SPEED_ENABLE.get();
     });
@@ -609,9 +715,17 @@ class Extension {
       this._enable.isCpuTempEnable = this._prefs.IS_CPU_TEMP_ENABLE.get();
     });
 
+    this._prefs.LABEL_TEXT.changed(() => {
+      this._texts.label = this._prefs.LABEL_TEXT.get() || "";
+      this._update_label();
+    });
     this._prefs.FONT_FAMILY.changed(() => this._update_text_style());
     this._prefs.FONT_SIZE.changed(() => this._update_text_style());
     this._prefs.TEXT_COLOR.changed(() => this._update_text_style());
+
+    this._prefs.FAN_NUMBER.changed(() => {
+      this._fan_number = this._prefs.FAN_NUMBER.get();
+    });
 
     this._prefs.REFRESH_INTERVAL.changed(() => {
       this._refresh_interval = this._prefs.REFRESH_INTERVAL.get();
@@ -627,6 +741,10 @@ class Extension {
   }
 
   _destory_setting_change_listener() {
+    this._prefs.IS_LABEL_ENABLE.disconnect();
+    this._prefs.IS_FAN_SPEED_ENABLE.disconnect();
+    this._prefs.LABEL_TEXT.disconnect();
+    this._prefs.FAN_NUMBER.disconnect();
     this._prefs.IS_NET_SPEED_ENABLE.disconnect();
     this._prefs.IS_CPU_TEMP_ENABLE.disconnect();
     this._prefs.REFRESH_INTERVAL.disconnect();

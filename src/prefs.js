@@ -22,8 +22,12 @@ const NanoSystemMonitorPrefsWidget = GObject.registerClass({
   GTypeName: 'NanoSystemMonitorPrefsWidget',
   Template: Me.dir.get_child(WIDGET_TEMPLATE_FILE).get_uri(),
   InternalChildren: [
+    'label_text',
+    'label_enable_switch',
     'net_speed_enable_switch',
     'cpu_temp_enable_switch',
+    'fan_speed_enable_switch',
+    'fan_number',
     'refresh_interval',
     'font_button',
     'text_color'
@@ -39,8 +43,12 @@ const NanoSystemMonitorPrefsWidget = GObject.registerClass({
     this.update_widget_setting_values();
   }
   update_widget_setting_values() {
+    this._label_text.set_text(this._configuration.LABEL_TEXT.get());
+    this._label_enable_switch.set_active(this._configuration.IS_LABEL_ENABLE.get());
     this._net_speed_enable_switch.set_active(this._configuration.IS_NET_SPEED_ENABLE.get());
     this._cpu_temp_enable_switch.set_active(this._configuration.IS_CPU_TEMP_ENABLE.get());
+    this._fan_speed_enable_switch.set_active(this._configuration.IS_FAN_SPEED_ENABLE.get());
+    this._fan_number.set_value(this._configuration.FAN_NUMBER.get());
     this._refresh_interval.set_value(this._configuration.REFRESH_INTERVAL.get());
     this._font_button.set_font(`${this._configuration.FONT_FAMILY.get()} ${this._configuration.FONT_SIZE.get()}`);
     const color = new Gdk.RGBA();
@@ -61,12 +69,28 @@ const NanoSystemMonitorPrefsWidget = GObject.registerClass({
     this._configuration.FONT_SIZE.set(fontSize);
   }
 
+  label_text_changed(widget) {
+    this._configuration.LABEL_TEXT.set(widget.get_text());
+  }
+
+  label_enable_switch_changed(widget) {
+    this._configuration.IS_LABEL_ENABLE.set(widget.get_active());
+  }
+
   net_speed_enable_switch_changed(widget) {
     this._configuration.IS_NET_SPEED_ENABLE.set(widget.get_active());
   }
 
   cpu_temp_enable_switch_changed(widget) {
     this._configuration.IS_CPU_TEMP_ENABLE.set(widget.get_active());
+  }
+
+  fan_speed_enable_switch_changed(widget) {
+    this._configuration.IS_FAN_SPEED_ENABLE.set(widget.get_active());
+  }
+
+  fan_number_changed(widget) {
+    this._configuration.FAN_NUMBER.set(widget.get_value());
   }
 
   refresh_interval_changed(widget) {
