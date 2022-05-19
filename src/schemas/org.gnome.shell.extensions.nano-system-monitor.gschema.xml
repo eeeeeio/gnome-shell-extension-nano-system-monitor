@@ -31,6 +31,16 @@
             <summary>Fan Number</summary>
             <description>Fan Number</description>
         </key>
+        <key type="i" name="cpu-temp-hwmon-number">
+            <default>1</default>
+            <summary>CPU Temperature Hwmon Number</summary>
+            <description>CPU Temperature Hwmon Number</description>
+        </key>
+        <key type="i" name="fan-speed-hwmon-number">
+            <default>2</default>
+            <summary>Fan Speed Hwmon Number</summary>
+            <description>Fan Speed Hwmon Number</description>
+        </key>
         <key type="i" name="refresh-interval">
             <default>1</default>
             <summary>Refresh Interval In Second</summary>

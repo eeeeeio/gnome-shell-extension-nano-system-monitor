@@ -293,9 +293,9 @@ const sensorsGetTemp = async () => {
 
 
 //  getTemp
-const getTemp = async () => {
+const getTemp = async (hwmonNumber) => {
   try {
-    const inputFile = Gio.File.new_for_path("/sys/class/hwmon/hwmon1/temp1_input");
+    const inputFile = Gio.File.new_for_path(`/sys/class/hwmon/hwmon${hwmonNumber}/temp1_input`);
     const fileInputStream = inputFile.read(null);
     const dataInputStream = new Gio.DataInputStream({
       base_stream: fileInputStream
@@ -320,9 +320,9 @@ const getTemp = async () => {
   return 0;
 };
 
-const getFan = async (numb) => {
+const getFan = async (numb,hwmonNumber) => {
   try {
-    const inputFile = Gio.File.new_for_path(`/sys/class/hwmon/hwmon2/fan${numb}_input`);
+    const inputFile = Gio.File.new_for_path(`/sys/class/hwmon/hwmon${hwmonNumber}/fan${numb}_input`);
     const fileInputStream = inputFile.read(null);
     const dataInputStream = new Gio.DataInputStream({
       base_stream: fileInputStream
@@ -420,7 +420,7 @@ const toDisplayString = (
         netSpeed["up"]
       )} - ` : null,
     temp: currentTemp ? `${enable.isLabelEnable ? randerTexts[5] : ""}${currentTemp}` : null,
-    fan: isNaN(fanSpeed) ? null: `${enable.isLabelEnable ? randerTexts[6] : ""} ${fanSpeed}`,
+    fan: typeof fanSpeed == "number"? `${enable.isLabelEnable ? randerTexts[6] : ""} ${fanSpeed}`:false,
   }
 
 
@@ -611,6 +611,8 @@ class Extension {
     };
 
     this._fan_number = this._prefs.FAN_NUMBER.get();
+    this._cpu_temp_hwmon_number = this._prefs.CPU_TEMP_HWMON_NUMBER.get();
+    this._fan_speed_hwmon_number = this._prefs.FAN_SPEED_HWMON_NUMBER.get();
     this._refresh_interval = this._prefs.REFRESH_INTERVAL.get();
 
     this._indicator = new Indicator();
@@ -640,6 +642,8 @@ class Extension {
     this._enable = null;
     this._refresh_interval = null;
     this._fan_number = null;
+    this._cpu_temp_hwmon_number = null;
+    this._fan_speed_hwmon_number = null;
     if (this._timeout != null) {
       GLib.source_remove(this._timeout);
       this._timeout = null;
@@ -676,13 +680,13 @@ class Extension {
     currentMemoryUsage = memoryUsage.currentMemoryUsage;
     currentMemorySwapUsage = memoryUsage.currentSwapMemoryUsage;
     if (this._enable.isFanSpeedEnable) {
-      currentFanSpeed = await getFan(this._fan_number);
+      currentFanSpeed = await getFan(this._fan_number,this._fan_speed_hwmon_number);
     }
     if (this._enable.isNetSpeedEnable) {
       currentNetSpeed = getCurrentNetSpeed(this._refresh_interval);
     }
     if (this._enable.isCpuTempEnable) {
-      currentTemp = await getTemp();
+      currentTemp = await getTemp(this._cpu_temp_hwmon_number);
     }
 
     const displayText = toDisplayString(
@@ -725,6 +729,12 @@ class Extension {
 
     this._prefs.FAN_NUMBER.changed(() => {
       this._fan_number = this._prefs.FAN_NUMBER.get();
+    });
+    this._prefs.CPU_TEMP_HWMON_NUMBER.changed(() => {
+      this._cpu_temp_hwmon_number = this._prefs.CPU_TEMP_HWMON_NUMBER.get();
+    });
+    this._prefs.FAN_SPEED_HWMON_NUMBER.changed(() => {
+      this._fan_speed_hwmon_number = this._prefs.FAN_SPEED_HWMON_NUMBER.get();
     });
 
     this._prefs.REFRESH_INTERVAL.changed(() => {

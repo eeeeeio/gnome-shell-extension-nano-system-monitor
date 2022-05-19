@@ -28,6 +28,8 @@ const NanoSystemMonitorPrefsWidget = GObject.registerClass({
     'cpu_temp_enable_switch',
     'fan_speed_enable_switch',
     'fan_number',
+    'cpu_temp_hwmon_number',
+    'fan_speed_hwmon_number',
     'refresh_interval',
     'font_button',
     'text_color'
@@ -49,6 +51,8 @@ const NanoSystemMonitorPrefsWidget = GObject.registerClass({
     this._cpu_temp_enable_switch.set_active(this._configuration.IS_CPU_TEMP_ENABLE.get());
     this._fan_speed_enable_switch.set_active(this._configuration.IS_FAN_SPEED_ENABLE.get());
     this._fan_number.set_value(this._configuration.FAN_NUMBER.get());
+    this._cpu_temp_hwmon_number.set_value(this._configuration.CPU_TEMP_HWMON_NUMBER.get());
+    this._fan_speed_hwmon_number.set_value(this._configuration.FAN_SPEED_HWMON_NUMBER.get());
     this._refresh_interval.set_value(this._configuration.REFRESH_INTERVAL.get());
     this._font_button.set_font(`${this._configuration.FONT_FAMILY.get()} ${this._configuration.FONT_SIZE.get()}`);
     const color = new Gdk.RGBA();
@@ -91,6 +95,12 @@ const NanoSystemMonitorPrefsWidget = GObject.registerClass({
 
   fan_number_changed(widget) {
     this._configuration.FAN_NUMBER.set(widget.get_value());
+  }
+  cpu_temp_hwmon_number_changed(widget) {
+    this._configuration.CPU_TEMP_HWMON_NUMBER.set(widget.get_value());
+  }
+  fan_speed_hwmon_number_changed(widget) {
+    this._configuration.FAN_SPEED_HWMON_NUMBER.set(widget.get_value());
   }
 
   refresh_interval_changed(widget) {

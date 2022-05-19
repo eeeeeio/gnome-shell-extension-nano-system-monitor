@@ -14,6 +14,18 @@
         <property name="step-increment">1</property>
         <property name="page-increment">5</property>
     </object>
+    <object class="GtkAdjustment" id="cpu_temp_hwmon_number_adjustment">
+        <property name="upper">20</property>
+        <property name="lower">0</property>
+        <property name="step-increment">1</property>
+        <property name="page-increment">5</property>
+    </object>
+    <object class="GtkAdjustment" id="fan_speed_hwmon_number_adjustment">
+        <property name="upper">20</property>
+        <property name="lower">0</property>
+        <property name="step-increment">1</property>
+        <property name="page-increment">5</property>
+    </object>
     <template class="NanoSystemMonitorPrefsWidget" parent="GtkBox">
         <child>
             <object class="GtkGrid">
@@ -191,14 +203,70 @@
                         </layout>
                     </object>
                 </child>
+                <!-- CPU Temperature Hwmon Number -->
                 <child>
                     <object class="GtkLabel">
                         <property name="can_focus">0</property>
-                        <property name="label" translatable="yes">install sensor or use other way
-to enable fan speed</property>
+                        <property name="label" translatable="yes">CPU Temperature Hwmon Number</property>
+                        <property name="margin_top">20</property>
+                        <layout>
+                            <property name="column">0</property>
+                            <property name="row">7</property>
+                        </layout>
+                    </object>
+                </child>
+                <child>
+                    <object class="GtkSpinButton" id="cpu_temp_hwmon_number">
+                        <property name="visible">1</property>
+                        <property name="can_focus">1</property>
+                        <property name="numeric">1</property>
+                        <property name="value">1</property>
+                        <property name="adjustment">cpu_temp_hwmon_number_adjustment</property>
+                        <property name="margin_top">20</property>
+                        <property name="valign">center</property>
+                        <signal name="value-changed" handler="cpu_temp_hwmon_number_changed" swapped="no" />
                         <layout>
                             <property name="column">1</property>
                             <property name="row">7</property>
+                        </layout>
+                    </object>
+                </child>
+                <!-- Fan Speed Hwmon Number -->
+                <child>
+                    <object class="GtkLabel">
+                        <property name="can_focus">0</property>
+                        <property name="label" translatable="yes">Fan Speed Hwmon Number</property>
+                        <property name="margin_top">20</property>
+                        <layout>
+                            <property name="column">0</property>
+                            <property name="row">8</property>
+                        </layout>
+                    </object>
+                </child>
+                <child>
+                    <object class="GtkSpinButton" id="fan_speed_hwmon_number">
+                        <property name="visible">1</property>
+                        <property name="can_focus">1</property>
+                        <property name="numeric">1</property>
+                        <property name="value">1</property>
+                        <property name="adjustment">fan_speed_hwmon_number_adjustment</property>
+                        <property name="margin_top">20</property>
+                        <property name="valign">center</property>
+                        <signal name="value-changed" handler="fan_speed_hwmon_number_changed" swapped="no" />
+                        <layout>
+                            <property name="column">1</property>
+                            <property name="row">8</property>
+                        </layout>
+                    </object>
+                </child>
+                <child>
+                    <object class="GtkLabel">
+                        <property name="can_focus">0</property>
+                        <property name="label" translatable="yes">install sensor or switch hwmon number
+or fan number to enable fan speed</property>
+                        <layout>
+                            <property name="column">1</property>
+                            <property name="row">9</property>
                         </layout>
                     </object>
                 </child>
@@ -211,7 +279,7 @@ to enable fan speed</property>
                         <property name="margin_top">20</property>
                         <layout>
                             <property name="column">0</property>
-                            <property name="row">9</property>
+                            <property name="row">10</property>
                         </layout>
                     </object>
                 </child>
@@ -227,7 +295,7 @@ to enable fan speed</property>
                         <signal name="value-changed" handler="refresh_interval_changed" swapped="no" />
                         <layout>
                             <property name="column">1</property>
-                            <property name="row">9</property>
+                            <property name="row">10</property>
                         </layout>
                     </object>
                 </child>
@@ -239,7 +307,7 @@ to enable fan speed</property>
                         <property name="margin_top">20</property>
                         <layout>
                             <property name="column">0</property>
-                            <property name="row">10</property>
+                            <property name="row">11</property>
                         </layout>
                     </object>
                 </child>
@@ -257,7 +325,7 @@ to enable fan speed</property>
                         <signal name="font-set" handler="font_changed" swapped="no" />
                         <layout>
                             <property name="column">1</property>
-                            <property name="row">10</property>
+                            <property name="row">11</property>
                         </layout>
                     </object>
                 </child>
@@ -268,7 +336,7 @@ to enable fan speed</property>
                         <property name="label" translatable="yes">Text Color</property>
                         <layout>
                             <property name="column">0</property>
-                            <property name="row">11</property>
+                            <property name="row">12</property>
                         </layout>
                     </object>
                 </child>
@@ -280,7 +348,7 @@ to enable fan speed</property>
                         <signal name="color-set" handler="color_changed" swapped="no" />
                         <layout>
                             <property name="column">1</property>
-                            <property name="row">11</property>
+                            <property name="row">12</property>
                         </layout>
                     </object>
                 </child>
