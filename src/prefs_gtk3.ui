@@ -14,6 +14,18 @@
         <property name="step-increment">1</property>
         <property name="page-increment">5</property>
     </object>
+    <object class="GtkAdjustment" id="cpu_temp_hwmon_number_adjustment">
+        <property name="upper">20</property>
+        <property name="lower">0</property>
+        <property name="step-increment">1</property>
+        <property name="page-increment">5</property>
+    </object>
+    <object class="GtkAdjustment" id="fan_speed_hwmon_number_adjustment">
+        <property name="upper">20</property>
+        <property name="lower">0</property>
+        <property name="step-increment">1</property>
+        <property name="page-increment">5</property>
+    </object>
     <template class="NanoSystemMonitorPrefsWidget" parent="GtkBox">
         <child>
             <object class="GtkGrid">
@@ -192,15 +204,72 @@
                         <property name="top_attach">6</property>
                     </packing>
                 </child>
+                <!-- CPU Temperature Hwmon Number -->
                 <child>
                     <object class="GtkLabel">
                         <property name="can_focus">0</property>
-                        <property name="label" translatable="yes">install sensor or use other way
-to enable fan speed</property>
+                        <property name="margin_top">20</property>
+                        <property name="label" translatable="yes">CPU Temperature Hwmon Number</property>
+                    </object>
+                    <packing>
+                        <property name="left_attach">0</property>
+                        <property name="top_attach">7</property>
+                    </packing>
+                </child>
+                <child>
+                    <object class="GtkSpinButton" id="cpu_temp_hwmon_number">
+                        <property name="visible">1</property>
+                        <property name="margin_top">20</property>
+                        <property name="can_focus">1</property>
+                        <property name="numeric">1</property>
+                        <property name="valign">center</property>
+                        <property name="value">1</property>
+                        <property name="adjustment">cpu_temp_hwmon_number_adjustment</property>
+                        <signal name="value-changed" handler="cpu_temp_hwmon_number_changed" swapped="no"/>
                     </object>
                     <packing>
                         <property name="left_attach">1</property>
                         <property name="top_attach">7</property>
+                    </packing>
+                </child>
+                <!-- Fan Speed Hwmon Number -->
+                <child>
+                    <object class="GtkLabel">
+                        <property name="can_focus">0</property>
+                        <property name="margin_top">20</property>
+                        <property name="label" translatable="yes">Fan Speed Hwmon Number</property>
+                    </object>
+                    <packing>
+                        <property name="left_attach">0</property>
+                        <property name="top_attach">8</property>
+                    </packing>
+                </child>
+                <child>
+                    <object class="GtkSpinButton" id="fan_speed_hwmon_number">
+                        <property name="visible">1</property>
+                        <property name="margin_top">20</property>
+                        <property name="can_focus">1</property>
+                        <property name="numeric">1</property>
+                        <property name="valign">center</property>
+                        <property name="value">1</property>
+                        <property name="adjustment">fan_speed_hwmon_number_adjustment</property>
+                        <signal name="value-changed" handler="fan_speed_hwmon_number_changed" swapped="no"/>
+                    </object>
+                    <packing>
+                        <property name="left_attach">1</property>
+                        <property name="top_attach">8</property>
+                    </packing>
+                </child>
+
+                <child>
+                    <object class="GtkLabel">
+                        <property name="can_focus">0</property>
+                        <property name="label" translatable="yes">install sensor or switch hwmon number
+or fan number to enable fan speed</property>
+                    </object>
+                    <packing>
+                        <property name="left_attach">1</property>
+                        <property name="top_attach">9</property>
                     </packing>
                 </child>
 
@@ -213,7 +282,7 @@ to enable fan speed</property>
                     </object>
                     <packing>
                         <property name="left_attach">0</property>
-                        <property name="top_attach">9</property>
+                        <property name="top_attach">10</property>
                     </packing>
                 </child>
                 <child>
@@ -229,7 +298,7 @@ to enable fan speed</property>
                     </object>
                     <packing>
                         <property name="left_attach">1</property>
-                        <property name="top_attach">9</property>
+                        <property name="top_attach">10</property>
                     </packing>
                 </child>
                 <!-- Font Family -->
@@ -241,7 +310,7 @@ to enable fan speed</property>
                     </object>
                     <packing>
                         <property name="left_attach">0</property>
-                        <property name="top_attach">10</property>
+                        <property name="top_attach">11</property>
                     </packing>
                 </child>
                 <child>
@@ -259,7 +328,7 @@ to enable fan speed</property>
                     </object>
                     <packing>
                         <property name="left_attach">1</property>
-                        <property name="top_attach">10</property>
+                        <property name="top_attach">11</property>
                     </packing>
                 </child>
                 <!-- Text Color -->
@@ -270,7 +339,7 @@ to enable fan speed</property>
                     </object>
                     <packing>
                         <property name="left_attach">0</property>
-                        <property name="top_attach">11</property>
+                        <property name="top_attach">12</property>
                     </packing>
                 </child>
                 <child>
@@ -282,7 +351,7 @@ to enable fan speed</property>
                     </object>
                     <packing>
                         <property name="left_attach">1</property>
-                        <property name="top_attach">11</property>
+                        <property name="top_attach">12</property>
                     </packing>
                 </child>
             </object>
