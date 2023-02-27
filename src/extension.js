@@ -256,6 +256,36 @@ const getCurrentMemoryUsage = () => {
   };
 };
 
+const getCurrentLoadAverage = () => {
+  let loadAvg = null;
+  try {
+    const inputFile = Gio.File.new_for_path("/proc/loadavg");
+    const fileInputStream = inputFile.read(null);
+    const dataInputStream = new Gio.DataInputStream({
+      base_stream: fileInputStream
+    });
+
+    let line = null;
+    let length = 0;
+
+    [line, length] = dataInputStream.read_line(null);
+    if (line != null) {
+      if (line instanceof Uint8Array) {
+        line = ByteArray.toString(line).trim();
+      } else {
+        line = line.toString().trim();
+      }
+    }
+    loadAvg = line;
+
+    fileInputStream.close(null);
+
+  } catch (e) {
+    logError(e);
+  }
+  return loadAvg;
+};
+
 function spawnCommandLine(command_line) {
   return new Promise((rec, rej) => {
     try {
@@ -498,8 +528,19 @@ const Indicator = GObject.registerClass(
         box.add_child(this._label[i]);
       })
 
+      this._currentCPUUsage = null;
+      this._currentMemoryUsage = null;
+      this._currentMemorySwapUsage = null;
+      this._currentLoadAvg = null;
+
       this.add_child(box);
 
+      let infoItem = new PopupMenu.PopupMenuItem('');
+      this.menu.addMenuItem(infoItem);
+      this.menu.connect('open-state-changed', () => {
+        infoItem.label.text = `CPU: ${(this._currentCPUUsage * 100).toFixed(1)} %\nMemory: ${(this._currentMemoryUsage * 100).toFixed(1)} %\nSwap: ${(this._currentMemorySwapUsage * 100).toFixed(1)} %\nLoad: ${this._currentLoadAvg}`;
+      });
+      this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
 
       let systemItem = new PopupMenu.PopupMenuItem("System monitor");
       let _appSys = Shell.AppSystem.get_default();
@@ -669,16 +710,14 @@ class Extension {
   }
 
   async _refresh_monitor() {
-    let currentCPUUsage = null;
     let currentFanSpeed = null;
-    let currentMemoryUsage = null;
     let currentNetSpeed = null;
-    let currentMemorySwapUsage = null;
     let currentTemp = null;
-    currentCPUUsage = getCurrentCPUUsage(this._refresh_interval);
+    this._indicator._currentCPUUsage = getCurrentCPUUsage(this._refresh_interval);
     let memoryUsage = getCurrentMemoryUsage();
-    currentMemoryUsage = memoryUsage.currentMemoryUsage;
-    currentMemorySwapUsage = memoryUsage.currentSwapMemoryUsage;
+    this._indicator._currentMemoryUsage = memoryUsage.currentMemoryUsage;
+    this._indicator._currentMemorySwapUsage = memoryUsage.currentSwapMemoryUsage;
+    this._indicator._currentLoadAvg = getCurrentLoadAverage();
     if (this._enable.isFanSpeedEnable) {
       currentFanSpeed = await getFan(this._fan_number,this._fan_speed_hwmon_number);
     }
@@ -692,9 +731,9 @@ class Extension {
     const displayText = toDisplayString(
       this._texts.label,
       this._enable,
-      currentCPUUsage,
-      currentMemoryUsage,
-      currentMemorySwapUsage,
+      this._indicator._currentCPUUsage,
+      this._indicator._currentMemoryUsage,
+      this._indicator._currentMemorySwapUsage,
       currentTemp,
       currentNetSpeed,
       currentFanSpeed,
